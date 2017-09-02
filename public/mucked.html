@@ -418,12 +418,21 @@
                     markerVisual.icon = "/public/assets/images/Needs_Rescue_Small.png";
                 }
 
-                var contentString = typeString +
-                      '<br>Name: ' + marker.get("name") +
-                      '<br>Phone Number: <a href="tel:' + marker.get("phone") + '">' + marker.get("phone") + '</a>' +
-                      '<br>Address: ' + marker.get("address") +
-                      '<br>Description: ' + marker.get("description") +
-                      '<br>Date: ' + marker.get("updatedAt");
+                if (type === "muckedHome" || type === "volunteer")
+                {
+                    var contentString = typeString +
+                        '<br>Name: ' + marker.get("name") +
+                        '<br>Phone Number: <a href="tel:' + marker.get("phone") + '">' + marker.get("phone") + '</a>' +
+                        '<br>Address: ' + marker.get("address") +
+                        '<br>Description: ' + marker.get("description") +
+                        '<br>Date: ' + marker.get("updatedAt");
+                } 
+                else if (type === "muckedOut" || type === "volunteerBusy")
+                {
+                    var contentString = typeString +
+                        '<br>Name: ' + marker.get("name") +
+                        '<br>Date: ' + marker.get("updatedAt");
+                }
 
                   if (type === "muckedHome")
                   {
