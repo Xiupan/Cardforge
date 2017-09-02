@@ -444,11 +444,11 @@
               "<br><button type=\"button\" onclick=\"markerVolunteerBusy(\'" + marker.id + "\')\">Mark as Busy</button>"
               if (dispatcherMarked)
               {
-                  "<br><button type=\"button\" onclick=\"markerVolunteerContacted(\'" + marker.id + "\', true)\">Mark as Contacted</button>"
+                  contentString += "<br><button type=\"button\" onclick=\"markerVolunteerContacted(\'" + marker.id + "\', true)\">Mark as Contacted</button>"
               }
               else
               {
-                  "<br><button type=\"button\" onclick=\"markerVolunteerContacted(\'" + marker.id + "\', false)\">Mark as Not Contacted</button>"
+                  contentString += "<br><button type=\"button\" onclick=\"markerVolunteerContacted(\'" + marker.id + "\', false)\">Mark as Not Contacted</button>"
               }
           } else if (type === "volunteerBusy") {
             contentString +=
@@ -456,11 +456,11 @@
       
               if (dispatcherMarked)
               {
-                  "<br><button type=\"button\" onclick=\"markerVolunteerContacted(\'" + marker.id + "\', true)\">Mark as Contacted</button>"
+                  contentString += "<br><button type=\"button\" onclick=\"markerVolunteerContacted(\'" + marker.id + "\', true)\">Mark as Contacted</button>"
               }
               else
               {
-                  "<br><button type=\"button\" onclick=\"markerVolunteerContacted(\'" + marker.id + "\', false)\">Mark as Not Contacted</button>"
+                  contentString += "<br><button type=\"button\" onclick=\"markerVolunteerContacted(\'" + marker.id + "\', false)\">Mark as Not Contacted</button>"
               }
           }
 
