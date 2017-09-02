@@ -229,6 +229,7 @@
               draggable: true
             }));
             
+            alert(place.geometry.location.lat() + ", " + place.geometry.location.lng())
 
             if (place.geometry.viewport) {
               // Only geocodes have viewport.
@@ -434,29 +435,31 @@
                         '<br>Date: ' + marker.get("updatedAt");
                 }
 
-                  if (type === "muckedHome")
-                  {
-                      contentString +=
-                              "<br><button type=\"button\" onclick=\"markerMucked(\'" + marker.id + "\')\">Mark as Mucked</button>"
-                  }
+                if (type === "muckedHome")
+                {
+                    contentString +=
+                            "<br><button type=\"button\" onclick=\"markerMucked(\'" + marker.id + "\')\">Mark as Mucked</button>"
+                }
+                else if (type === "volunteer")
+                {
+                    contentString +=
+                            "<br><button type=\"button\" onclick=\"markerVolunteerBusy(\'" + marker.id + "\')\">Mark as Busy</button>"
+                }
+                else if (type === "volunteerBusy")
+                {
+                    contentString +=
+                            "<br><button type=\"button\" onclick=\"markerVolunteerFree(\'" + marker.id + "\')\">Mark as Free</button>"
+                }
 
-                  else if (type === "volunteer")
-                  {
-                      contentString +=
-                              "<br><button type=\"button\" onclick=\"markerVolunteerBusy(\'" + marker.id + "\')\">Mark as Busy</button>"
-                  }
-                  else if (type === "volunteerBusy")
-                  {
-                      contentString +=
-                              "<br><button type=\"button\" onclick=\"markerVolunteerFree(\'" + marker.id + "\')\">Mark as Free</button>"
-                  }
+                //dispatcher button
+                contentString +=
+                            "<br><button type=\"button\" onclick=\"updatePositionData(\'" + marker.id + "\')\">Update Position</button>"
+
+                var infowindow = new google.maps.InfoWindow({
+                  content: contentString
 
 
-                  var infowindow = new google.maps.InfoWindow({
-                    content: contentString
-
-
-                  });
+                });
 
                   /*
                   document.getElementById("refresh").addEventListener('click', function(){
@@ -838,6 +841,44 @@
               {
                   alert("Incorrect PIN, please try again.");
               }
+            },
+            error: function(error) {
+              alert("Error: " + error.code + " " + error.message);
+            }
+          });
+    }
+    
+    function updatePositionData(objectId)
+    {
+        var latLngRaw = prompt("Please enter the new location: (e.g. 29.74593050000001, -95.39948299999998)");
+        var splitString = latLngRaw.split(",");
+        if (splitString.length !== 2)
+        {
+            alert("Incorrect format, must be two numbers separated by a comma. Please try again.");
+            return;
+        }
+        if (isNan(splitString[0]) || isNan(splitString[1]))
+        {
+            alert("Incorrect format, at least one of input is not a number. Please try again.");
+            return;
+        }
+        var latLng = new google.maps.LatLng(splitString[0],isNan(splitString[1]));
+ 
+        Parse.$ = jQuery;
+        Parse.initialize("cardforgegame","brian"); // Your App Name
+        Parse.serverURL = 'https://cardforge.herokuapp.com/parse'; // Your Server URL
+        Parse.useMasterKey = true;
+
+        var gpsMarker = Parse.Object.extend("GPSMarkerObject");
+        var query = new Parse.Query(gpsMarker);
+        query.get(objectId, {
+            success: function(markerParse) {
+              //var pin = markerParse.get("pin");
+                markerParse.set("positionData", latLng);
+                markerParse.save();
+                
+                
+              
             },
             error: function(error) {
               alert("Error: " + error.code + " " + error.message);
