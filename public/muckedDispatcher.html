@@ -857,7 +857,7 @@
             alert("Incorrect format, must be two numbers separated by a comma. Please try again.");
             return;
         }
-        if (isNan(splitString[0]) || isNan(splitString[1]))
+        if (isNaN(splitString[0]) || isNaN(splitString[1]))
         {
             alert("Incorrect format, at least one of input is not a number. Please try again.");
             return;
@@ -877,7 +877,7 @@
                 markerParse.set("positionData", latLng);
                 markerParse.save();
                 
-                
+                alert("Position updated.");
               
             },
             error: function(error) {
