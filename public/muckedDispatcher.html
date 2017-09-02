@@ -442,7 +442,7 @@
           } else if (type === "volunteer") {
             contentString +=
               "<br><button type=\"button\" onclick=\"markerVolunteerBusy(\'" + marker.id + "\')\">Mark as Busy</button>"
-              if (dispatcherMarked)
+              if (!dispatcherMarked)
               {
                   contentString += "<br><button type=\"button\" onclick=\"markerVolunteerContacted(\'" + marker.id + "\', true)\">Mark as Contacted</button>"
               }
@@ -454,7 +454,7 @@
             contentString +=
               "<br><button type=\"button\" onclick=\"markerVolunteerFree(\'" + marker.id + "\')\">Mark as Free</button>"
       
-              if (dispatcherMarked)
+              if (!dispatcherMarked)
               {
                   contentString += "<br><button type=\"button\" onclick=\"markerVolunteerContacted(\'" + marker.id + "\', true)\">Mark as Contacted</button>"
               }
