@@ -852,6 +852,8 @@
     {
         var latLngRaw = prompt("Please enter the new location: (e.g. 29.74593050000001, -95.39948299999998)");
         var splitString = latLngRaw.split(",");
+        if (splitString == null)
+            return;
         if (splitString.length !== 2)
         {
             alert("Incorrect format, must be two numbers separated by a comma. Please try again.");
@@ -877,7 +879,7 @@
                 markerParse.set("positionData", latLng);
                 markerParse.save();
                 
-                alert("Position updated.");
+                alert("Position updated, refresh map to see update.");
               
             },
             error: function(error) {
