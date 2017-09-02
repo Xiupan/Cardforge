@@ -10,3 +10,10 @@
 * Run the server with: `npm start`
 * Then open a Browser and go to localhost:1337 to see the main page
 * localhost:1337/muckmap is the Texas Muck Map
+
+### Contact Info
+
+* Please join Sketch City Houston on Slack: http://sketchcity.herokuapp.com/
+* Then join the #texasrescuemap channel within the Sketch City Slack
+* Talk with someone there to get Heroku access!
+* Welcome and thanks for contributing! :)
