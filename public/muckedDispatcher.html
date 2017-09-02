@@ -862,7 +862,7 @@
             alert("Incorrect format, at least one of input is not a number. Please try again.");
             return;
         }
-        var latLng = new google.maps.LatLng(splitString[0],isNan(splitString[1]));
+        var latLng = new google.maps.LatLng(splitString[0],splitString[1]);
  
         Parse.$ = jQuery;
         Parse.initialize("cardforgegame","brian"); // Your App Name
