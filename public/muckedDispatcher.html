@@ -404,7 +404,10 @@
 
           if (type === "volunteer") {
             typeString = "Volunteer Available";
-            markerVisual.icon = "/public/assets/images/volunteer.png";
+            if (dispatcherMarked)
+              markerVisual.icon = "/public/assets/images/volunteerContacted.png";
+            else  
+                markerVisual.icon = "/public/assets/images/volunteer.png";
           } else if (type === "volunteerBusy") {
             typeString = "Volunteer Busy";
             markerVisual.icon = "/public/assets/images/volunteerBusy.png";
@@ -413,13 +416,13 @@
             markerVisual.icon = "/public/assets/images/Rescued_Small.png";
           } else if (type === "muckedHome") {
             typeString = "Mucked Home";
-            markerVisual.icon = "/public/assets/images/Needs_Rescue_Small.png";
+            if (dispatcherMarked)
+                markerVisual.icon = "/public/assets/images/needRescueContacted.png";
+            else
+                markerVisual.icon = "/public/assets/images/Needs_Rescue_Small.png";
           }
           
-          if (dispatcherMarked)
-          {
-              markerVisual.icon = "/public/assets/images/volunteerContacted.png";
-          }
+          
 
           if (type === "muckedHome" || type === "volunteer") {
             var contentString = typeString +
@@ -439,29 +442,29 @@
           if (type === "muckedHome") {
             contentString +=
               "<br><button type=\"button\" onclick=\"markerMucked(\'" + marker.id + "\')\">Mark as Mucked</button>"
+      
+              if (!dispatcherMarked)
+              {
+                  contentString += "<br><button type=\"button\" onclick=\"markerContacted(\'" + marker.id + "\', true)\">Mark as Contacted</button>"
+              }
+              else
+              {
+                  contentString += "<br><button type=\"button\" onclick=\"markerContacted(\'" + marker.id + "\', false)\">Mark as Not Contacted</button>"
+              }
           } else if (type === "volunteer") {
             contentString +=
               "<br><button type=\"button\" onclick=\"markerVolunteerBusy(\'" + marker.id + "\')\">Mark as Busy</button>"
               if (!dispatcherMarked)
               {
-                  contentString += "<br><button type=\"button\" onclick=\"markerVolunteerContacted(\'" + marker.id + "\', true)\">Mark as Contacted</button>"
+                  contentString += "<br><button type=\"button\" onclick=\"markerContacted(\'" + marker.id + "\', true)\">Mark as Contacted</button>"
               }
               else
               {
-                  contentString += "<br><button type=\"button\" onclick=\"markerVolunteerContacted(\'" + marker.id + "\', false)\">Mark as Not Contacted</button>"
+                  contentString += "<br><button type=\"button\" onclick=\"markerContacted(\'" + marker.id + "\', false)\">Mark as Not Contacted</button>"
               }
           } else if (type === "volunteerBusy") {
             contentString +=
               "<br><button type=\"button\" onclick=\"markerVolunteerFree(\'" + marker.id + "\')\">Mark as Free</button>"
-      
-              if (!dispatcherMarked)
-              {
-                  contentString += "<br><button type=\"button\" onclick=\"markerVolunteerContacted(\'" + marker.id + "\', true)\">Mark as Contacted</button>"
-              }
-              else
-              {
-                  contentString += "<br><button type=\"button\" onclick=\"markerVolunteerContacted(\'" + marker.id + "\', false)\">Mark as Not Contacted</button>"
-              }
           }
 
           //dispatcher button
@@ -820,7 +823,7 @@
       });
     }
     
-    function markerVolunteerContacted(objectId, state) {
+    function markerContacted(objectId, state) {
       //var enteredPin = prompt("Please enter your 4-digit PIN:");
 
       Parse.$ = jQuery;
@@ -836,7 +839,7 @@
           if (true) {
             markerParse.set("dispatcherMarked", state);
             markerParse.save();
-            alert("This volunteer has been marked! Refresh the page to update.");
+            alert("This marker has been marked! Refresh the page to update.");
           } else {
             alert("Incorrect PIN, please try again.");
           }
