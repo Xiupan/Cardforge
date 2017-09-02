@@ -400,7 +400,7 @@
             });*/
           var type = marker.get("type");
           var typeString;
-
+          var dispatcherMarked = marker.get("dispatcherMarked");
 
           if (type === "volunteer") {
             typeString = "Volunteer Available";
@@ -415,6 +415,11 @@
             typeString = "Mucked Home";
             markerVisual.icon = "/public/assets/images/Needs_Rescue_Small.png";
           }
+          
+          if (dispatcherMarked)
+          {
+              markerVisual.icon = "/public/assets/images/volunteerContacted.png";
+          }
 
           if (type === "muckedHome" || type === "volunteer") {
             var contentString = typeString +
@@ -428,6 +433,8 @@
               '<br>Name: ' + marker.get("name") +
               '<br>Date: ' + marker.get("updatedAt");
           }
+          
+          
 
           if (type === "muckedHome") {
             contentString +=
@@ -435,9 +442,26 @@
           } else if (type === "volunteer") {
             contentString +=
               "<br><button type=\"button\" onclick=\"markerVolunteerBusy(\'" + marker.id + "\')\">Mark as Busy</button>"
+              if (dispatcherMarked)
+              {
+                  "<br><button type=\"button\" onclick=\"markerVolunteerContacted(\'" + marker.id + "\', true)\">Mark as Contacted</button>"
+              }
+              else
+              {
+                  "<br><button type=\"button\" onclick=\"markerVolunteerContacted(\'" + marker.id + "\', false)\">Mark as Not Contacted</button>"
+              }
           } else if (type === "volunteerBusy") {
             contentString +=
               "<br><button type=\"button\" onclick=\"markerVolunteerFree(\'" + marker.id + "\')\">Mark as Free</button>"
+      
+              if (dispatcherMarked)
+              {
+                  "<br><button type=\"button\" onclick=\"markerVolunteerContacted(\'" + marker.id + "\', true)\">Mark as Contacted</button>"
+              }
+              else
+              {
+                  "<br><button type=\"button\" onclick=\"markerVolunteerContacted(\'" + marker.id + "\', false)\">Mark as Not Contacted</button>"
+              }
           }
 
           //dispatcher button
@@ -795,6 +819,34 @@
         }
       });
     }
+    
+    function markerVolunteerContacted(objectId, state) {
+      //var enteredPin = prompt("Please enter your 4-digit PIN:");
+
+      Parse.$ = jQuery;
+      Parse.initialize("cardforgegame", "brian"); // Your App Name
+      Parse.serverURL = 'https://cardforge.herokuapp.com/parse'; // Your Server URL
+      Parse.useMasterKey = true;
+
+      var gpsMarker = Parse.Object.extend("GPSMarkerObject");
+      var query = new Parse.Query(gpsMarker);
+      query.get(objectId, {
+        success: function(markerParse) {
+          //var pin = markerParse.get("pin");
+          if (true) {
+            markerParse.set("dispatcherMarked", state);
+            markerParse.save();
+            alert("This volunteer has been marked! Refresh the page to update.");
+          } else {
+            alert("Incorrect PIN, please try again.");
+          }
+        },
+        error: function(error) {
+          alert("Error: " + error.code + " " + error.message);
+        }
+      });
+    }
+    
 
     function updatePositionData(objectId) {
       var latLngRaw = prompt("Please enter the new location: (e.g. 29.74593050000001, -95.39948299999998)");
