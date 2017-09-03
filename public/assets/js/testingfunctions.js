@@ -164,7 +164,7 @@ function deleteGPSMarker (callbackFunction)
   var gpsMarker = Parse.Object.extend("GPSMarkerObject");
   var query = new Parse.Query(gpsMarker);
   query.descending("updatedAt")
-  query.limit=10000;
+  query.limit(5000);
   query.find({
     success: function(results) {
       alert("Successfully retrieved " + results.length + " gps markers.");
@@ -205,4 +205,41 @@ function markerDisplay(objectId,callBack)
           alert("Error: " + error.code + " " + error.message);
         }
       });
+}
+
+// This function should be able to allow a User to specify how many hours they want to filter by. hoursAgo can be changed and may be set by a function argument. Right now, this function works if called and displays the pins by the correct filter hour amount.
+function retrieveGPSMarkersByRecency (callbackFunction)
+{
+  Parse.$ = jQuery;
+  Parse.initialize("cardforgegame","brian"); // Your App Name
+  Parse.serverURL = 'https://cardforge.herokuapp.com/parse'; // Your Server URL
+  Parse.useMasterKey = true;
+
+  var gpsMarker = Parse.Object.extend("GPSMarkerObject");
+  var query = new Parse.Query(gpsMarker);
+  var hoursAgo = 2;
+  query.descending("updatedAt")
+  query.limit(5000);
+  query.find({
+    success: function(results) {
+      var nowInEpochTimeHours = (Math.ceil((Date.now() / 1000) / 3600));
+      var epochTimeAdjustment = (nowInEpochTimeHours - hoursAgo);
+      console.log("nowInEpochTimeHours: " + nowInEpochTimeHours);
+      console.log("epochTimeAdjustment: " + epochTimeAdjustment);
+      // console.log(Math.ceil(nowInEpochTimeHours) + " hours since Epoch Time (Now).");
+      var recentPinArray = [];
+      for (var i = 0; i < results.length; i++) {
+        var object = results[i];
+        var objectTimeInHours = (Math.ceil((object.updatedAt.getTime() / 1000) / 3600));
+        if (objectTimeInHours > epochTimeAdjustment) {
+          console.log(recentPinArray.length);
+          recentPinArray.push(object)
+        }
+      }
+        callbackFunction(recentPinArray);
+    },
+    error: function(error) {
+      callbackFunction(error);
+    }
+  });
 }
