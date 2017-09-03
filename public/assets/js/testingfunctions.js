@@ -57,6 +57,32 @@ function editMarkerInfo(objectId,name,description,positionData,type,phone)
       });
 }
 
+function adminEditMarkerInfo(objectId,name,description,positionData,type,phone)
+{
+    Parse.$ = jQuery;
+    Parse.initialize("cardforgegame","brian"); // Your App Name
+    Parse.serverURL = 'https://cardforge.herokuapp.com/parse'; // Your Server URL
+    Parse.useMasterKey = true;
+
+    var gpsMarker = Parse.Object.extend("GPSMarkerObject");
+    var query = new Parse.Query(gpsMarker);
+    query.get(objectId, {
+        success: function(markerParse) {
+          var pin = markerParse.get("pin");
+              markerParse.set("name", name);
+              markerParse.set("description", description);
+              markerParse.set("positionData", positionData);
+              markerParse.set("type", type);
+              markerParse.set("phone", phone);
+              markerParse.save();
+              alert("Your pin information has now been edited, thank you!");
+        },
+        error: function(error) {
+          alert("Error: " + error.code + " " + error.message);
+        }
+      });
+}
+
 function createNewGPSMarker (name, description, positionData,type,phone,pin, address)
 {
   //alert("attempting save gps marker");
@@ -108,6 +134,7 @@ function retrieveGPSMarkers (callbackFunction)
   query.limit(5000);
   query.find({
     success: function(results) {
+      console.log('gpsmarkers: ',results);
       //alert("Successfully retrieved " + results.length + " gps markers.");
       // Do something with the returned Parse.Object values
       for (var i = 0; i < results.length; i++) {
@@ -153,4 +180,28 @@ function deleteGPSMarker (callbackFunction)
       callbackFunction(error);
     }
   });
+}
+
+function markerDisplay(objectId,callBack)
+{
+    // var enteredPin = prompt("Please enter your 4-digit PIN:");
+
+    Parse.$ = jQuery;
+    Parse.initialize("cardforgegame","brian"); // Your App Name
+    Parse.serverURL = 'https://cardforge.herokuapp.com/parse'; // Your Server URL
+    Parse.useMasterKey = true;
+
+    var gpsMarker = Parse.Object.extend("GPSMarkerObject");
+    var query = new Parse.Query(gpsMarker);
+    console.log('objectId: ',objectId);
+    query.get(objectId,{
+        success: function(results) {
+
+          let attrs = results.attributes;
+          callBack(attrs,objectId);
+        },
+        error: function(error) {
+          alert("Error: " + error.code + " " + error.message);
+        }
+      });
 }
