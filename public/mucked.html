@@ -71,6 +71,7 @@
       <br>
   </div>
   <input id="addressBar" class="controls" type="text" placeholder="Enter address here">
+  <!-- <input id="filterBar" class="controls" type="text" placeholder="Filter pins by number of hours ago"> -->
   <div id="googleMap" style="width:100%;height:550px;"></div>
   <a href="https://www.texasrescuemap.com/muckmap/map">Click here to view just the map!</a>
 
@@ -191,7 +192,11 @@
       //code for map address bar
       var input = document.getElementById("addressBar");
       var searchBox = new google.maps.places.SearchBox(input);
+
+      // var filterInput = document.getElementById("filterBar");
+      // var filterBox = new google.maps.places.SearchBox(filterInput);
       map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+      // map.controls[google.maps.ControlPosition.TOP_RIGHT].push(filterInput);
 
       map.addListener('bounds_changed', function() {
         searchBox.setBounds(map.getBounds());
