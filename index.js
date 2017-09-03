@@ -43,7 +43,7 @@ app.use(mountPath, api);
 
 // Parse Server plays nicely with the rest of your web routes
 app.get('/', function(req, res) {
-  res.sendFile(path.join(__dirname, '/public/kathyTest.html'));
+  res.sendFile(path.join(__dirname, '/public/joshTest.html'));
 });
 
 // Texas Muck Map
@@ -103,6 +103,11 @@ app.get('/alpha1', function(req, res) {
 // Page for donation centers after flood
 app.get('/donationMap', function(req, res) {
   res.sendFile(path.join(__dirname, '/public/donationMap.html'));
+});
+
+// Dispatcher admin portal
+app.get('/dhdgsushsbcb3526dispatcheradmin', function(req, res) {
+  res.sendFile(path.join(__dirname, '/public/dispatcher.html'));
 });
 
 var port = process.env.PORT || 1337;

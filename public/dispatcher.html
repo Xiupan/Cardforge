@@ -129,6 +129,7 @@
 
         });
 
+
         function callbackMarkersQuery(datamarkers)
       {
         //alert("callback function handling " + datamarkers.length + "data markers");
@@ -189,29 +190,10 @@
                       '<br>Description: ' + marker.get("description") +
                       '<br>Date: ' + marker.get("updatedAt");
 
-                  if (type === "needRescue")
-                  {
-                      contentString +=
-                              "<br><button type=\"button\" onclick=\"markerRescued(\'" + marker.id + "\')\">I Am Rescued!</button>";
-                  }
-                  else if (type === "shelter")
-                  {
-                      contentString +=
-                              "<br><button type=\"button\" onclick=\"markerShelterClosed(\'" + marker.id + "\')\">Close Shelter</button>";
-                  }
-                  else if (type === "shelterClosed")
-                  {
-                      contentString +=
-                              "<br><button type=\"button\" onclick=\"markerShelterOpen(\'" + marker.id + "\')\">Reopen Shelter</button>";
-                  }
-                  else if (type === "rescueVehicle")
-                  {
-                      contentString +=
-                              "<br><button type=\"button\" onclick=\"markerDelete(\'" + marker.id + "\')\">Delete</button>";
-                  }
 
+                  contentString +="<br><button type=\"button\" onclick=\"markerDelete(\'" + marker.id + "\')\">Delete</button>";
 
-
+                  contentString +="<button type=\"button\" onclick=\"markerEdit(\'" + marker.id + "\')\">Edit</button>";
 
                   var infowindow = new google.maps.InfoWindow({
                     content: contentString
@@ -385,6 +367,64 @@
         //TODO send this info to parse
     }
 
+    function markerEdit(id){
+      console.log('marker to edit: ',id);
+      markerDisplay(id,markerShow);
+    }
+    function markerShow(attrs,id){
+      console.log('marker attrs: ',attrs);
+      var objectId = id;
+      var name = $( "#name" );
+      var type = attrs.type;
+      var num = 0;
+      if (type === "shelter")
+      {
+          num = 0;
+      }
+      else if (type === "shelter")
+      {
+          num = 1;
+      }
+      else if (type === "rescueVehicle" )
+      {
+          num = 2;
+      }
+      var description = $( "#description" );
+      var phone = $("#phone");
+      var pin = $("#pin");
+      var latLng = attrs.positionData;
+      name.val(attrs.name);
+      description.val(attrs.description);
+      $("input:radio[name=markerType]")[num].checked = true;
+      phone.val(attrs.phone);
+      pin.val(attrs.pin);
+      var dialog = $("#newEntryDialog").dialog({
+          buttons: {
+              "Submit": function () {
+                  dialog.dialog('close');
+                  type = $("input:radio[name=markerType]:checked").val();
+                  //adminEditMarkerInfo(objectId,name,description,positionData,type,phone)
+                  adminEditMarkerInfo(objectId,name.val(),description.val(),latLng,type,phone.val());
+                  name.val("");
+                  description.val("");
+                  $("input:radio[name=markerType]")[0].checked = true;
+                  phone.val("");
+                  pin.val("");
+
+              },
+                  "Cancel": function () {
+                   name.val("");
+                  description.val("");
+                  dialog.dialog('close');
+                  $("input:radio[name=markerType]")[0].checked = true;
+                  phone.val("");
+                  pin.val("");
+              }
+          }
+      });
+    }
+
+
     function markerRescued(objectId)
     {
         var enteredPin = prompt("Please enter your 4-digit PIN:");
@@ -511,7 +551,7 @@
 
     function markerDelete(objectId)
     {
-        var enteredPin = prompt("Please enter your 4-digit PIN:");
+        // var enteredPin = prompt("Please enter your 4-digit PIN:");
 
         Parse.$ = jQuery;
         Parse.initialize("cardforgegame","brian"); // Your App Name
@@ -523,8 +563,8 @@
         query.get(objectId, {
             success: function(markerParse) {
               var pin = markerParse.get("pin");
-              if (enteredPin === pin)
-              {
+              // if (enteredPin === pin)
+              // {
                   markerParse.destroy({
                     success: function(markerParse) {
                       alert("Your marker is now deleted! Refresh the page to update.");
@@ -534,11 +574,11 @@
                     }
                   });
 
-              }
-              else
-              {
-                  alert("Incorrect 4-digit PIN, please try again.");
-              }
+              // }
+              // else
+              // {
+              //     alert("Incorrect 4-digit PIN, please try again.");
+              // }
             },
             error: function(error) {
               alert("Error: " + error.code + " " + error.message);
