@@ -205,3 +205,40 @@ function markerDisplay(objectId,callBack)
         }
       });
 }
+
+function updatePositionData(objectId) {
+  var latLngRaw = prompt("Please enter the new location: (e.g. 29.74593050000001, -95.39948299999998)");
+  var splitString = latLngRaw.split(",");
+  if (splitString == null)
+    return;
+  if (splitString.length !== 2) {
+    alert("Incorrect format, must be two numbers separated by a comma. Please try again.");
+    return;
+  }
+  if (isNaN(splitString[0]) || isNaN(splitString[1])) {
+    alert("Incorrect format, at least one of input is not a number. Please try again.");
+    return;
+  }
+  var latLng = new google.maps.LatLng(splitString[0], splitString[1]);
+
+  Parse.$ = jQuery;
+  Parse.initialize("cardforgegame", "brian"); // Your App Name
+  Parse.serverURL = 'https://cardforge.herokuapp.com/parse'; // Your Server URL
+  Parse.useMasterKey = true;
+
+  var gpsMarker = Parse.Object.extend("GPSMarkerObject");
+  var query = new Parse.Query(gpsMarker);
+  query.get(objectId, {
+    success: function(markerParse) {
+      //var pin = markerParse.get("pin");
+      markerParse.set("positionData", latLng);
+      markerParse.save();
+
+      alert("Position updated, refresh map to see update.");
+
+    },
+    error: function(error) {
+      alert("Error: " + error.code + " " + error.message);
+    }
+  });
+}

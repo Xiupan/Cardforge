@@ -51,6 +51,10 @@ app.get('/muckmap', function(req, res) {
   res.sendFile(path.join(__dirname, '/public/mucked.html'));
 });
 
+app.get('/muckdispatcher', function(req, res) {
+  res.sendFile(path.join(__dirname, '/public/muckedDispatcher.html'));
+});
+
 // Texas Muck Map Only
 app.get('/muckmap/map', function(req, res) {
   res.sendFile(path.join(__dirname, '/public/muckedMapOnly.html'));
