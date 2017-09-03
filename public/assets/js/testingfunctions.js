@@ -207,8 +207,100 @@ function markerDisplay(objectId,callBack)
       });
 }
 
+function callbackMarkersQuery(datamarkers) {
+  //alert("callback function handling " + datamarkers.length + "data markers");
+  var markers = []; //load from parse here
+  //TODO: placeholder markers
+
+  datamarkers.forEach(function(marker, index, array) {
+    //alert("for each loop handling datamarker");
+    //alert("posdata" + marker.get("positionData"));
+    //  alert("name" + marker.get("name"));
+    var markerVisual = new google.maps.Marker({
+      position: marker.get("positionData"),
+      map: map,
+      icon: "/public/assets/images/Shelter_Small.png"
+    });
+    /*var infowindow = new google.maps.InfoWindow({
+  content: 'Name: ' + marker.name +
+  '<br>Description: ' + marker.description
+});*/
+    var type = marker.get("type");
+    var typeString;
+
+
+    if (type === "volunteer") {
+      typeString = "Volunteer Available";
+      markerVisual.icon = "/public/assets/images/volunteer.png";
+    } else if (type === "volunteerBusy") {
+      typeString = "Volunteer Busy";
+      markerVisual.icon = "/public/assets/images/volunteerBusy.png";
+    } else if (type === "muckedOut") {
+      typeString = "Mucked Out";
+      markerVisual.icon = "/public/assets/images/Rescued_Small.png";
+    } else if (type === "muckedHome") {
+      typeString = "Mucked Home";
+      markerVisual.icon = "/public/assets/images/Needs_Rescue_Small.png";
+    }
+
+    if (type === "muckedHome" || type === "volunteer") {
+      var contentString = typeString +
+        '<br>Name: ' + marker.get("name") +
+        '<br>Phone Number: <a href="tel:' + marker.get("phone") + '">' + marker.get("phone") + '</a>' +
+        '<br>Address: ' + marker.get("address") +
+        '<br>Description: ' + marker.get("description") +
+        '<br>Date: ' + marker.get("updatedAt");
+    } else if (type === "muckedOut" || type === "volunteerBusy") {
+      var contentString = typeString +
+        '<br>Name: ' + marker.get("name") +
+        '<br>Date: ' + marker.get("updatedAt");
+    }
+
+    if (type === "muckedHome") {
+      contentString +=
+        "<br><button type=\"button\" onclick=\"markerMucked(\'" + marker.id + "\')\">Mark as Mucked</button>"
+    } else if (type === "volunteer") {
+      contentString +=
+        "<br><button type=\"button\" onclick=\"markerVolunteerBusy(\'" + marker.id + "\')\">Mark as Busy</button>"
+    } else if (type === "volunteerBusy") {
+      contentString +=
+        "<br><button type=\"button\" onclick=\"markerVolunteerFree(\'" + marker.id + "\')\">Mark as Free</button>"
+    }
+
+
+    var infowindow = new google.maps.InfoWindow({
+      content: contentString
+
+
+    });
+
+    /*
+document.getElementById("refresh").addEventListener('click', function(){
+var mapProp= {
+center:new google.maps.LatLng(29.7602626,-95.3702536),
+zoom:12,
+};
+var map=new google.maps.Map(document.getElementById("googleMap"),mapProp);
+markLocation();
+});*/
+
+    google.maps.event.addListener(markerVisual, 'click', function() {
+      if (lastOpenWindow)
+        lastOpenWindow.close();
+      lastOpenWindow = infowindow;
+      infowindow.open(map, markerVisual);
+    });
+
+    if (type == 'muckedHome' || type == 'muckedOut' || type == 'volunteer' || type == 'volunteerBusy') {
+      markerVisual.setMap(map);
+    } else {
+      markerVisual.setMap(null);
+    }
+  });
+};
+
 // This function should be able to allow a User to specify how many hours they want to filter by. hoursAgo can be changed and may be set by a function argument. Right now, this function works if called and displays the pins by the correct filter hour amount.
-function retrieveGPSMarkersByRecency (callbackFunction)
+function retrieveGPSMarkersByRecency (callbackFunction, hoursAgo)
 {
   Parse.$ = jQuery;
   Parse.initialize("cardforgegame","brian"); // Your App Name
@@ -217,7 +309,7 @@ function retrieveGPSMarkersByRecency (callbackFunction)
 
   var gpsMarker = Parse.Object.extend("GPSMarkerObject");
   var query = new Parse.Query(gpsMarker);
-  var hoursAgo = 2;
+  // var hoursAgo = 2;
   query.descending("updatedAt")
   query.limit(5000);
   query.find({
@@ -231,12 +323,13 @@ function retrieveGPSMarkersByRecency (callbackFunction)
       for (var i = 0; i < results.length; i++) {
         var object = results[i];
         var objectTimeInHours = (Math.ceil((object.updatedAt.getTime() / 1000) / 3600));
-        if (objectTimeInHours > epochTimeAdjustment) {
-          console.log(recentPinArray.length);
+        if (objectTimeInHours >= epochTimeAdjustment) {
+          // console.log(recentPinArray.length);
           recentPinArray.push(object)
         }
       }
-        callbackFunction(recentPinArray);
+      console.log(recentPinArray.length + " results returned.");
+      callbackFunction(recentPinArray);
     },
     error: function(error) {
       callbackFunction(error);

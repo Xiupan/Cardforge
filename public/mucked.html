@@ -13,6 +13,7 @@
   <link rel="stylesheet" href="/public/assets/css/bootstrap.min.css">
   <link rel="stylesheet" href="/public/assets/css/font-awesome.min.css">
   <link rel="stylesheet" href="/public/assets/css/style.css">
+
   <style>
     #newEntryDialog {
       display: none;
@@ -72,6 +73,7 @@
   </div>
   <input id="addressBar" class="controls" type="text" placeholder="Enter address here">
   <!-- <input id="filterBar" class="controls" type="text" placeholder="Filter pins by number of hours ago"> -->
+  <input id="clickMe" type="button" value="clickme" />
   <div id="googleMap" style="width:100%;height:550px;"></div>
   <a href="https://www.texasrescuemap.com/muckmap/map">Click here to view just the map!</a>
 
@@ -137,10 +139,41 @@
     <p><a href="#googleMap">Go to map!</a> -or- <a href="#">Go to top!</a></p>
   </div>
 
+
+  <!--<input id="refresh" type="button" value="refresh" />
+<button class="shelterBtn"></button> -->
+
   <script>
+    function loadMarkers(dataMarkersArg) {
+      // var datamarkers = retrieveGPSMarkers(callbackMarkersQuery);
+      var datamarkers = dataMarkersArg;
+      // var datamarkers = retrieveGPSMarkersByRecency(callbackMarkersQuery, 1);
+    }
+
     var mapAddressBarMarkers;
+    var markers = [];
+
+    function setMapOnAll(map) {
+      for (var i = 0; i < markers.length; i++) {
+        markers[i].setMap(map);
+      }
+    }
+
+    function clearMarkers() {
+      setMapOnAll(null);
+    }
+
 
     function myMap() {
+      $(function() {
+        $('#clickMe').click(function() {
+          setMapOnAll(map);
+          clearMarkers();
+          loadMarkers(retrieveGPSMarkersByRecency(callbackMarkersQuery, 1));
+          // retrieveGPSMarkersByRecency();
+        });
+      });
+
       var mapProp = {
         center: new google.maps.LatLng(29.7602626, -95.3702536),
         zoom: 12,
@@ -179,14 +212,12 @@
         mouseMoved = true;
         if (mouseHoldTimeOut != null)
           clearTimeout(mouseHoldTimeOut);
-
       });
 
       google.maps.event.addListener(map, 'mouseup', function(event) {
         mouseMoved = true;
         if (mouseHoldTimeOut != null)
           clearTimeout(mouseHoldTimeOut);
-
       });
 
       //code for map address bar
@@ -350,13 +381,11 @@
           };
 
           // Create a marker for each place.
-
           addressMarkersForm2.push(new google.maps.Marker({
             map: map,
             title: place.name,
             position: place.geometry.location
           }));
-
 
           if (place.geometry.viewport) {
             // Only geocodes have viewport.
@@ -399,12 +428,11 @@
             icon: "/public/assets/images/Shelter_Small.png"
           });
           /*var infowindow = new google.maps.InfoWindow({
-              content: 'Name: ' + marker.name +
-              '<br>Description: ' + marker.description
-            });*/
+      content: 'Name: ' + marker.name +
+      '<br>Description: ' + marker.description
+    });*/
           var type = marker.get("type");
           var typeString;
-
 
           if (type === "volunteer") {
             typeString = "Volunteer Available";
@@ -447,17 +475,15 @@
 
           var infowindow = new google.maps.InfoWindow({
             content: contentString
-
-
           });
 
           /*
           document.getElementById("refresh").addEventListener('click', function(){
             var mapProp= {
-                center:new google.maps.LatLng(29.7602626,-95.3702536),
-                zoom:12,
-            };
-            var map=new google.maps.Map(document.getElementById("googleMap"),mapProp);
+            center:new google.maps.LatLng(29.7602626,-95.3702536),
+            zoom:12,
+          };
+          var map=new google.maps.Map(document.getElementById("googleMap"),mapProp);
             markLocation();
           });*/
 
@@ -476,14 +502,8 @@
         });
       };
 
-      function loadMarkers() {
-
-        var datamarkers = retrieveGPSMarkers(callbackMarkersQuery);
-
-      }
-
-      loadMarkers();
-
+      // loadMarkers(retrieveGPSMarkersByRecency(callbackMarkersQuery, 0));
+      loadMarkers(retrieveGPSMarkers(callbackMarkersQuery));
 
       function markLocation() {
         if (navigator.geolocation) {
@@ -492,7 +512,6 @@
           alert("Geolocation is not supported by this browser.");
         }
       }
-
 
       function showPosition(position) {
 
@@ -517,7 +536,7 @@
       //old function
       /*
       google.maps.event.addListener(map, 'click', function(event) {
-          addMarker(event.latLng);
+      addMarker(event.latLng);
       });*/
 
       function addMarker(latLng) {
@@ -525,7 +544,6 @@
         var description = $("#description");
         var phone = $("#phone");
         var pin = $("#pin");
-
 
         var dialog = $("#newEntryDialog").dialog({
           buttons: {
@@ -602,7 +620,6 @@
           lastOpenWindow = infowindow;
           infowindow.open(map, marker);
 
-
           createNewGPSMarker(name.val(), description.val(), latLng, type, phone.val(), pin.val());
         }
       }
@@ -677,8 +694,6 @@
             infowindow.open(map, marker);
           }
         }
-
-
       }
     } //DO NOT MOVE THIS BRACKET, FUNCTION BELOW MUST STAY OUT OF IT
 
@@ -796,10 +811,45 @@
         }
       });
     }
+
+    function retrieveGPSMarkersByRecency (callbackFunction, hoursAgo)
+    {
+      Parse.$ = jQuery;
+      Parse.initialize("cardforgegame","brian"); // Your App Name
+      Parse.serverURL = 'https://cardforge.herokuapp.com/parse'; // Your Server URL
+      Parse.useMasterKey = true;
+
+      var gpsMarker = Parse.Object.extend("GPSMarkerObject");
+      var query = new Parse.Query(gpsMarker);
+      // var hoursAgo = 2;
+      query.descending("updatedAt")
+      query.limit(5000);
+      query.find({
+        success: function(results) {
+          var nowInEpochTimeHours = (Math.ceil((Date.now() / 1000) / 3600));
+          var epochTimeAdjustment = (nowInEpochTimeHours - hoursAgo);
+          console.log("nowInEpochTimeHours: " + nowInEpochTimeHours);
+          console.log("epochTimeAdjustment: " + epochTimeAdjustment);
+          // console.log(Math.ceil(nowInEpochTimeHours) + " hours since Epoch Time (Now).");
+          var recentPinArray = [];
+          for (var i = 0; i < results.length; i++) {
+            var object = results[i];
+            var objectTimeInHours = (Math.ceil((object.updatedAt.getTime() / 1000) / 3600));
+            if (objectTimeInHours >= epochTimeAdjustment) {
+              // console.log(recentPinArray.length);
+              recentPinArray.push(object)
+            }
+          }
+          console.log(recentPinArray.length + " results returned.");
+          callbackFunction(recentPinArray);
+        },
+        error: function(error) {
+          callbackFunction(error);
+        }
+      });
+    }
   </script>
 
-  <!--<input id="refresh" type="button" value="refresh" />
-<button class="shelterBtn"></button> -->
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCcDdbLMRqoSW-sAPr1iLW0WV7OrlzThcg&libraries=places&callback=myMap"></script>
 
   <div class="container my-5" id="resources">
