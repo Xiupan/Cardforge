@@ -190,10 +190,25 @@
                       '<br>Description: ' + marker.get("description") +
                       '<br>Date: ' + marker.get("updatedAt");
 
-
+                      if (type === "needRescue")
+                      {
+                          contentString +=
+                                  "<br><button type=\"button\" onclick=\"markerRescued(\'" + marker.id + "\')\">I Am Rescued!</button>";
+                      }
+                      else if (type === "shelter")
+                      {
+                          contentString +=
+                                  "<br><button type=\"button\" onclick=\"markerShelterClosed(\'" + marker.id + "\')\">Close Shelter</button>";
+                      }
+                      else if (type === "shelterClosed")
+                      {
+                          contentString +=
+                                  "<br><button type=\"button\" onclick=\"markerShelterOpen(\'" + marker.id + "\')\">Reopen Shelter</button>";
+                      }
                   contentString +="<br><button type=\"button\" onclick=\"markerDelete(\'" + marker.id + "\')\">Delete</button>";
 
                   contentString +="<button type=\"button\" onclick=\"markerEdit(\'" + marker.id + "\')\">Edit</button>";
+                  contentString +="<button type=\"button\" onclick=\"updatePositionData(\'" + marker.id + "\')\">Update Location</button>";
 
                   var infowindow = new google.maps.InfoWindow({
                     content: contentString
@@ -412,8 +427,8 @@
                   pin.val("");
 
               },
-                  "Cancel": function () {
-                   name.val("");
+              "Cancel": function () {
+                  name.val("");
                   description.val("");
                   dialog.dialog('close');
                   $("input:radio[name=markerType]")[0].checked = true;
@@ -427,7 +442,7 @@
 
     function markerRescued(objectId)
     {
-        var enteredPin = prompt("Please enter your 4-digit PIN:");
+
 
         Parse.$ = jQuery;
         Parse.initialize("cardforgegame","brian"); // Your App Name
@@ -439,16 +454,11 @@
         query.get(objectId, {
             success: function(markerParse) {
               var pin = markerParse.get("pin");
-              if (enteredPin === pin)
-              {
+
                   markerParse.set("type", "rescued");
                   markerParse.save();
                   alert("You are now marked as rescued! Refresh the page to update.");
-              }
-              else
-              {
-                  alert("Incorrect 4-digit PIN, please try again.");
-              }
+
             },
             error: function(error) {
               alert("Error: " + error.code + " " + error.message);
@@ -458,7 +468,6 @@
 
     function markerRescued(objectId)
     {
-        var enteredPin = prompt("Please enter your 4-digit PIN:");
 
         Parse.$ = jQuery;
         Parse.initialize("cardforgegame","brian"); // Your App Name
@@ -470,16 +479,11 @@
         query.get(objectId, {
             success: function(markerParse) {
               var pin = markerParse.get("pin");
-              if (enteredPin === pin)
-              {
+
                   markerParse.set("type", "rescued");
                   markerParse.save();
                   alert("You are now marked as rescued! Refresh the page to update.");
-              }
-              else
-              {
-                  alert("Incorrect 4-digit PIN, please try again.");
-              }
+
             },
             error: function(error) {
               alert("Error: " + error.code + " " + error.message);
@@ -489,8 +493,6 @@
 
     function markerShelterClosed(objectId)
     {
-        var enteredPin = prompt("Please enter your 4-digit PIN:");
-
         Parse.$ = jQuery;
         Parse.initialize("cardforgegame","brian"); // Your App Name
         Parse.serverURL = 'https://cardforge.herokuapp.com/parse'; // Your Server URL
@@ -501,16 +503,11 @@
         query.get(objectId, {
             success: function(markerParse) {
               var pin = markerParse.get("pin");
-              if (enteredPin === pin)
-              {
+
                   markerParse.set("type", "shelterClosed");
                   markerParse.save();
                   alert("Your shelter is now marked as closed! Refresh the page to update.");
-              }
-              else
-              {
-                  alert("Incorrect 4-digit PIN, please try again.");
-              }
+
             },
             error: function(error) {
               alert("Error: " + error.code + " " + error.message);
@@ -520,7 +517,6 @@
 
     function markerShelterOpen(objectId)
     {
-        var enteredPin = prompt("Please enter your 4-digit PIN:");
 
         Parse.$ = jQuery;
         Parse.initialize("cardforgegame","brian"); // Your App Name
@@ -532,16 +528,11 @@
         query.get(objectId, {
             success: function(markerParse) {
               var pin = markerParse.get("pin");
-              if (enteredPin === pin)
-              {
+
                   markerParse.set("type", "shelter");
                   markerParse.save();
                   alert("Your shelter is now marked as open! Refresh the page to update.");
-              }
-              else
-              {
-                  alert("Incorrect 4-digit PIN, please try again.");
-              }
+
             },
             error: function(error) {
               alert("Error: " + error.code + " " + error.message);
