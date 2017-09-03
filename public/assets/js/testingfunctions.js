@@ -105,6 +105,7 @@ function createNewGPSMarker (name, description, positionData,type,phone,pin, add
   testObject.set("phone",phone);
   testObject.set("pin",pin);
   testObject.set("address",address);
+  testObject.set("dispatcherMarked",false);
 
 
   testObject.save(null, {
