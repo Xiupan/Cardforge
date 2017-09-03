@@ -421,16 +421,18 @@
           }
 
           if (type === "muckedHome" || type === "volunteer") {
+            var hoursAgo = ((Math.ceil((Date.now() / 1000) / 3600)) - (Math.ceil((marker.get("updatedAt").getTime() / 1000) / 3600)));
             var contentString = typeString +
               '<br>Name: ' + marker.get("name") +
               '<br>Phone Number: <a href="tel:' + marker.get("phone") + '">' + marker.get("phone") + '</a>' +
               '<br>Address: ' + marker.get("address") +
               '<br>Description: ' + marker.get("description") +
-              '<br>Date: ' + marker.get("updatedAt");
+              '<br>Date: ' + marker.get("updatedAt") + ' (Last updated ' + hoursAgo + ' hour(s) ago).';
           } else if (type === "muckedOut" || type === "volunteerBusy") {
+            var hoursAgo = ((Math.ceil((Date.now() / 1000) / 3600)) - (Math.ceil((marker.get("updatedAt").getTime() / 1000) / 3600)));
             var contentString = typeString +
               '<br>Name: ' + marker.get("name") +
-              '<br>Date: ' + marker.get("updatedAt");
+              '<br>Date: ' + marker.get("updatedAt") + ' (Last updated ' + hoursAgo + ' hour(s) ago).';
           }
 
           if (type === "muckedHome") {
