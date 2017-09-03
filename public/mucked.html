@@ -151,24 +151,10 @@
     }
 
     var mapAddressBarMarkers;
-    var markers = [];
-
-    function setMapOnAll(map) {
-      for (var i = 0; i < markers.length; i++) {
-        markers[i].setMap(map);
-      }
-    }
-
-    function clearMarkers() {
-      setMapOnAll(null);
-    }
-
 
     function myMap() {
       $(function() {
         $('#clickMe').click(function() {
-          setMapOnAll(map);
-          clearMarkers();
           loadMarkers(retrieveGPSMarkersByRecency(callbackMarkersQuery, 1));
           // retrieveGPSMarkersByRecency();
         });
