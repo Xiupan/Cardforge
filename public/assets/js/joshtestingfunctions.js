@@ -4,7 +4,7 @@ function checkUser()
   Parse.serverURL = 'https://cardforge.herokuapp.com/parse'; // Your Server URL
   Parse.useMasterKey = true;
   var can_vet = false;
-  var can_edit = false;
+  var can_edit = true;
 
   var currentUser = Parse.User.current();
   if(currentUser){
