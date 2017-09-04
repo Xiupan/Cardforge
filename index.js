@@ -51,6 +51,11 @@ app.get('/muckmap', function(req, res) {
   res.sendFile(path.join(__dirname, '/public/mucked.html'));
 });
 
+app.get('/muckmap/filterByHours/:hoursAgo', function(req, res){
+  var hoursAgo = req.param('hoursAgo');
+  res.sendFile(path.join(__dirname, '/public/muckedRecency.html'));
+});
+
 app.get('/muckdispatcher', function(req, res) {
   res.sendFile(path.join(__dirname, '/public/muckedDispatcher.html'));
 });
