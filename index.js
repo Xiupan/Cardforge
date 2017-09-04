@@ -51,16 +51,38 @@ app.get('/muckmap', function(req, res) {
   res.sendFile(path.join(__dirname, '/public/mucked.html'));
 });
 
-app.get('/muckmap/filterByHours/:hoursAgo', function(req, res){
-  var hoursAgo = req.param('hoursAgo');
-  res.sendFile(path.join(__dirname, '/public/muckedRecency.html'));
-});
+// app.get('/muckmap/filterByHours/:hoursAgo', function(req, res){
+//   var hoursAgo = req.params.hoursAgo;
+//   res.sendFile(path.join(__dirname, '/public/muckedRecency.html'));
+// });
+
+app.get('/muckmap/hourFilter/0', function(req, res){
+  res.sendFile(path.join(__dirname, '/public/mucked0.html'));
+})
+
+app.get('/muckmap/hourFilter/1', function(req, res){
+  res.sendFile(path.join(__dirname, '/public/mucked1.html'));
+})
+
+app.get('/muckmap/hourFilter/2', function(req, res){
+  res.sendFile(path.join(__dirname, '/public/mucked2.html'));
+})
+
+app.get('/muckmap/hourFilter/3', function(req, res){
+  res.sendFile(path.join(__dirname, '/public/mucked3.html'));
+})
+
+app.get('/muckmap/hourFilter/4', function(req, res){
+  res.sendFile(path.join(__dirname, '/public/mucked4.html'));
+})
+
+app.get('/muckmap/hourFilter/5', function(req, res){
+  res.sendFile(path.join(__dirname, '/public/mucked5.html'));
+})
 
 app.get('/muckdispatcher', function(req, res) {
   res.sendFile(path.join(__dirname, '/public/muckedDispatcher.html'));
 });
-
-
 
 // Texas Muck Map Only
 app.get('/muckmap/map', function(req, res) {

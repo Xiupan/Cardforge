@@ -208,7 +208,7 @@ function markerDisplay(objectId,callBack)
 }
 
 // This function should be able to allow a User to specify how many hours they want to filter by. hoursAgo can be changed and may be set by a function argument. Right now, this function works if called and displays the pins by the correct filter hour amount.
-function retrieveGPSMarkersByRecency (callbackFunction)
+function retrieveGPSMarkersByRecency (callbackFunction, hoursAgo)
 {
   Parse.$ = jQuery;
   Parse.initialize("cardforgegame","brian"); // Your App Name
@@ -217,7 +217,6 @@ function retrieveGPSMarkersByRecency (callbackFunction)
 
   var gpsMarker = Parse.Object.extend("GPSMarkerObject");
   var query = new Parse.Query(gpsMarker);
-  var hoursAgo = 2;
   query.descending("updatedAt")
   query.limit(5000);
   query.find({
@@ -231,7 +230,7 @@ function retrieveGPSMarkersByRecency (callbackFunction)
       for (var i = 0; i < results.length; i++) {
         var object = results[i];
         var objectTimeInHours = (Math.ceil((object.updatedAt.getTime() / 1000) / 3600));
-        if (objectTimeInHours > epochTimeAdjustment) {
+        if (objectTimeInHours >= epochTimeAdjustment) {
           console.log(recentPinArray.length);
           recentPinArray.push(object)
         }
