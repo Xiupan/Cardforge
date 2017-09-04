@@ -1,3 +1,29 @@
+function checkUser()
+  {
+  Parse.initialize("cardforgegame","brian"); // Your App Name
+  Parse.serverURL = 'https://cardforge.herokuapp.com/parse'; // Your Server URL
+  Parse.useMasterKey = true;
+  var can_vet = false;
+  var can_edit = false;
+
+  var currentUser = Parse.User.current();
+  if(currentUser){
+    console.log('current user is: ',currentUser.attributes);
+    if(currentUser.attributes.auth=='admin'){
+      can_edit=true;
+    }
+    if(currentUser.attributes.can_vet_others){
+      can_vet=true;
+    }
+    return {can_vet,can_edit};
+  }else{
+    console.log('nobody logged in');
+    return {can_vet,can_edit};
+  }
+}
+
+var credentials = checkUser();
+
 function helloMyParse()
 {
     //alert("attempting save");
@@ -122,7 +148,7 @@ function createNewGPSMarker (name, description, positionData,type,phone,pin, add
 function retrieveGPSMarkers (callbackFunction)
 {
   //alert("querying list of gps markers");
-
+  console.log('credentials: ',credentials);
   Parse.$ = jQuery;
   Parse.initialize("cardforgegame","brian"); // Your App Name
   Parse.serverURL = 'https://cardforge.herokuapp.com/parse'; // Your Server URL
@@ -240,5 +266,74 @@ function updatePositionData(objectId) {
     error: function(error) {
       alert("Error: " + error.code + " " + error.message);
     }
+  });
+}
+function createNewDispatcher(name,username,email,description,phone,password){
+  console.log('createNewDispatcher');
+  Parse.initialize("cardforgegame","brian"); // Your App Name
+  Parse.serverURL = 'https://cardforge.herokuapp.com/parse'; // Your Server URL
+  var user = new Parse.User();
+  user.set("name", name);
+  user.set("username", username);
+  user.set("auth","entry");
+  user.set("can_vet_others",false);
+  user.set("password", password);
+  user.set("description", description);
+  user.set("email", email);
+  user.set("type", "HarveyResponse");
+
+  // other fields can be set just like with Parse.Object
+  user.set("phone", phone);
+
+  user.signUp(null, {
+    success: function(user) {
+      // Hooray! Let them use the app now.
+      console.log('new user! ',user);
+      Parse.useMasterKey = true;
+
+      var TestObject = Parse.Object.extend("Dispatcher_Privileges");
+      var testObject = new TestObject();
+      testObject.set("userid",user.id);
+    },
+    error: function(user, error) {
+      // Show the error message somewhere and let the user try again.
+      alert("Error: " + error.code + " " + error.message);
+    }
+  });
+
+}
+
+function promoteDispatcher(id){
+  Parse.initialize("cardforgegame","brian"); // Your App Name
+  Parse.serverURL = 'https://cardforge.herokuapp.com/parse'; // Your Server URL
+  Parse.Cloud.define("stealGold", function(request, response) {
+    var query = new Parse.Query(Parse.User);
+    query.equalTo("objectId", request.params.targetObjectId);
+      query.find({
+        success: function(dispatcher) {
+          dispatcher = dispatcher[0];
+          dispatcher.set("name","Harry");
+        }
+    });
+  });
+//   var query = new Parse.Query(Parse.User);
+//   query.equalTo("objectId", id);
+//   query.find({
+//     success: function(dispatcher) {
+//       dispatcher = dispatcher[0];
+//       dispatcher.set("name","Harry");
+//     }
+// });
+//   console.log('promoting dispatcher: ',id);
+//   if(credentials.can_vet){
+//     console.log('this person can vet: ',credentials.can_vet);
+//   }else{
+//     alert('Incorrect authorization level.');
+//   }
+}
+
+function logoutDispatcher(){
+  Parse.User.logOut().then(() => {
+    var currentUser = Parse.User.current();  // this will now be null
   });
 }

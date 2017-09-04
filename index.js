@@ -43,7 +43,7 @@ app.use(mountPath, api);
 
 // Parse Server plays nicely with the rest of your web routes
 app.get('/', function(req, res) {
-  res.sendFile(path.join(__dirname, '/public/joshTest.html'));
+  res.sendFile(path.join(__dirname, '/public/kathyTest.html'));
 });
 
 // Texas Muck Map
@@ -54,6 +54,8 @@ app.get('/muckmap', function(req, res) {
 app.get('/muckdispatcher', function(req, res) {
   res.sendFile(path.join(__dirname, '/public/muckedDispatcher.html'));
 });
+
+
 
 // Texas Muck Map Only
 app.get('/muckmap/map', function(req, res) {

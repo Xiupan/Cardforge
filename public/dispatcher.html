@@ -14,7 +14,7 @@
         <link rel="stylesheet" href="/public/assets/css/font-awesome.min.css">
         <link rel="stylesheet" href="/public/assets/css/style.css">
         <style>
-            #newEntryDialog {
+            #newEntryDialog, #newDispatcherDialog {
                 display:none;
             }
             body{
@@ -33,6 +33,21 @@
             #addressBar:focus {
                 border-color: #4d90fe;
             }
+            #dispatcher_button{
+              border:1px solid #000;
+              padding:15px;
+              border-radius:15px;
+              cursor:pointer;
+            }
+            .dispatcher-item{
+              border:1px solid #000;
+              padding:15px;
+              border-radius:15px;
+            }
+            #log_out,#log_in{
+              cursor:pointer;
+            }
+            }
         </style>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Texas Rescue Map</title>
@@ -40,13 +55,25 @@
 <body>
 
 <img style="height: 75px;" src="/public/assets/images/logo.png">
+<span id="logout">
 
+</span>
 <input id="addressBar" class="controls" type="text" placeholder="Enter address here">
 <div class="container my-5">
-  <h2>Dispatcher Admin Page</h2>
-  <p>
-    This map doesn't require PIN numbers to edit or delete markers. 
-  </p>
+   <div class="row">
+     <div class="col-sm-6">
+        <h2>Dispatcher Admin Page</h2>
+        <p>
+          This map doesn't require PIN numbers to edit or delete markers.
+        </p>
+      </div>
+      <div class="col-sm-6">
+        <div id="dispatcher_button">
+         <h3>Sign Up To Be a Dispatcher</h3>
+       </div>
+      </div>
+
+    </div>
 </div>
 <div id="googleMap" style="width:100%;height:400px;"></div>
 
@@ -65,6 +92,26 @@
                 <input type="radio" name="markerType" value="rescueVehicle"> Has Rescue Vehicle</div>
                 <div>4-digit PIN to make later edits:<br>
                     <input type="text" name="pin" id="pin" pattern="[0-9]{4}" maxlength="4"></div>
+                </fieldset>
+              </form>
+        </div>
+
+        <div id="newDispatcherDialog">
+            <form>
+            <fieldset>
+              <div>Name<br>
+              <input type="text" name="disp-name" id="disp-name" value="" class="text ui-widget-content ui-corner-all"></div>
+              <div>Username<br>
+              <input type="text" name="disp-username" id="disp-username" value="" class="text ui-widget-content ui-corner-all"></div>
+              <div>Password<br>
+              <input type="text" name="disp-password" id="disp-password" value="" class="text ui-widget-content ui-corner-all"></div>
+              <div>Email<br>
+              <input type="text" name="disp-email" id="disp-email" value=""></div>
+              <div>Phone Number<br>
+              <input type="number" name="disp-phone" id="disp-phone" value=""></div>
+              <div>Additional Comments<br>
+                  <textarea id="disp-description" rows="4" cols="22"></textarea></div>
+
                 </fieldset>
               </form>
         </div>
@@ -288,6 +335,56 @@
             addMarker(event.latLng);
         });
 
+        $("#dispatcher_button").on('click',function(){
+          addDispatcher();
+        });
+
+        function addDispatcher(){
+
+            var name = $( "#disp-name" );
+            var username = $( "disp-username" );
+            var password = $( "disp-password" );
+            var description = $( "#disp-description" );
+            var phone = $("#disp-phone");
+            var email = $("#disp-email");
+
+
+          var dialog = $("#newDispatcherDialog").dialog({
+              buttons: {
+                  "Add": function () {
+                      dialog.dialog('close');
+                      addDispatcherEntry();
+                      name.val("");
+                      username.val("");
+                      password.val("");
+                      description.val("");
+                      phone.val("");
+                      email.val("");
+                  },
+                      "Cancel": function () {
+                      dialog.dialog('close');
+                      name.val("");
+                      username.val("");
+                      password.val("");
+                      description.val("");
+                      phone.val("");
+                      email.val("");
+                  }
+              }
+          });
+          dialog.dialog.open();
+        }
+        function addDispatcherEntry() {
+            console.log('adding dispatcher');
+            var name = $( "#disp-name" );
+            var username = $( "#disp-username" );
+            var password = $( "#disp-password" );
+            var description = $( "#disp-description" );
+            var phone = $("#disp-phone");
+            var email = $("#disp-email");
+              createNewDispatcher(name.val(),username.val(),email.val(),description.val(),phone.val(),password.val());
+        }
+
         function addMarker(latLng)
         {
             var name = $( "#name" );
@@ -460,11 +557,13 @@
         query.get(objectId, {
             success: function(markerParse) {
               var pin = markerParse.get("pin");
-
+              if(credentials.can_edit){
                   markerParse.set("type", "rescued");
                   markerParse.save();
                   alert("You are now marked as rescued! Refresh the page to update.");
-
+              }else{
+                alert('Incorrect authorization level.');
+              }
             },
             error: function(error) {
               alert("Error: " + error.code + " " + error.message);
@@ -485,10 +584,13 @@
         query.get(objectId, {
             success: function(markerParse) {
               var pin = markerParse.get("pin");
-
+              if(credentials.can_edit){
                   markerParse.set("type", "rescued");
                   markerParse.save();
                   alert("You are now marked as rescued! Refresh the page to update.");
+                }else{
+                  alert('Incorrect authorization level.');
+                }
 
             },
             error: function(error) {
@@ -509,10 +611,13 @@
         query.get(objectId, {
             success: function(markerParse) {
               var pin = markerParse.get("pin");
-
+              if(credentials.can_edit){
                   markerParse.set("type", "shelterClosed");
                   markerParse.save();
                   alert("Your shelter is now marked as closed! Refresh the page to update.");
+                }else{
+                  alert('Incorrect authorization level.');
+                }
 
             },
             error: function(error) {
@@ -534,10 +639,13 @@
         query.get(objectId, {
             success: function(markerParse) {
               var pin = markerParse.get("pin");
-
+                if(credentials.can_edit){
                   markerParse.set("type", "shelter");
                   markerParse.save();
                   alert("Your shelter is now marked as open! Refresh the page to update.");
+                }else{
+                  alert('Incorrect authorization level.');
+                }
 
             },
             error: function(error) {
@@ -549,7 +657,6 @@
     function markerDelete(objectId)
     {
         // var enteredPin = prompt("Please enter your 4-digit PIN:");
-
         Parse.$ = jQuery;
         Parse.initialize("cardforgegame","brian"); // Your App Name
         Parse.serverURL = 'https://cardforge.herokuapp.com/parse'; // Your Server URL
@@ -560,8 +667,8 @@
         query.get(objectId, {
             success: function(markerParse) {
               var pin = markerParse.get("pin");
-              // if (enteredPin === pin)
-              // {
+              if (credentials.can_edit)
+              {
                   markerParse.destroy({
                     success: function(markerParse) {
                       alert("Your marker is now deleted! Refresh the page to update.");
@@ -571,11 +678,11 @@
                     }
                   });
 
-              // }
-              // else
-              // {
-              //     alert("Incorrect 4-digit PIN, please try again.");
-              // }
+              }
+              else
+              {
+                  alert("Incorrect authorization level to delete markers.");
+              }
             },
             error: function(error) {
               alert("Error: " + error.code + " " + error.message);
@@ -591,6 +698,11 @@
         <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCcDdbLMRqoSW-sAPr1iLW0WV7OrlzThcg&libraries=places&callback=myMap"></script>
 
   <div class="container my-5">
+    <section>
+      <h2>Dispatcher List</h2>
+      <div id="dispatcher-list">
+      </div>
+    </section>
     <section id="intro">
       <h2>If you need rescue or if you are a rescuer or open shelter, tap on the map to mark your location!</h2>
       <p class="lead">Texas Rescue Map aims to make it simpler for people needing rescue to coordinate with nearby rescuers and shelters. Zoom into your current location on the map and tap on it to drop a custom pin. Please include a phone number and any extra information in the description to help locate and identify you.</p>
@@ -623,5 +735,102 @@
       <p class="small">Disclaimer: Texasrescuemap.com is not liable for damages, including loss of life, limb, or property. This site is a volunteer-run website and is not affiliated with any government organization. Please do not wait for rescue! If someone else shows up first, go with them! We cannot guarantee rescues. Please call 911 for emergencies.</p>
     </div>
   </footer>
+  <script type="text/javascript">
+
+    var Users = Parse.User.extend("Users");
+    var query = new Parse.Query(Parse.User);
+    query.equalTo("type", "HarveyResponse");
+    query.find({
+      success: function(results) {
+        console.log(results);
+        for(let i=0; i<results.length; i++){
+          var content = [
+            '<div class="dispatcher-item">',
+                '<div>',
+                  '<h3>',results[i].attributes.name,'</h3>',
+                '</div>',
+              '<div class="row">',
+              '<div class="col-sm-6">',
+                '<div>',
+                  results[i].attributes.auth,' level',
+                '</div>',
+                '<div>',
+                  'username: ',results[i].attributes.username,
+                '</div>',
+                '<div>',
+                  'email: ',results[i].attributes.email,
+                '</div>',
+              '</div>',
+              '<div class="col-sm-6">',
+                '<div>',
+                  'phone: ',results[i].attributes.phone,
+                '</div>',
+                '<div>',
+                  'comments: ',results[i].attributes.description,
+                '</div>',
+              '</div>',
+              '</div>',
+              '<button id=',results[i].id,' class="promote-dispatcher">',
+              'Promote',
+              '</button>',
+            '</div>'
+          ].join('');
+          $("#dispatcher-list").append(
+            content
+          );
+          let dispatch_var = "#"+results[i].id;
+          $(dispatch_var).click(function(){
+            var id = this.id;
+            promoteDispatcher(id);
+          });
+        }
+      },
+      error: function(error) {
+        alert("Error: " + error.code + " " + error.message);
+      }
+    });
+    if(Parse.User.current()){
+        $('#logout').append(
+          '<button id="log_out">Log Out</button>'
+        );
+    }else{
+      $('#logout').append(
+        '<button id="log_in">Log In</button>'
+      );
+    }
+    var logoutListener = function(){
+        $('#log_out').on('click',function(){
+        alert('You are logged out!');
+        $('#logout').empty();
+        $('#logout').append(
+          '<button id="log_in">Log In</button>'
+        );
+        loginListener();
+      });
+    }
+    var loginListener = function(){
+        $('#log_in').on('click',function(){
+        let username = prompt('username: ');
+        let password = prompt('password: ');
+        Parse.User.logIn(username, password, {
+          success: function(user) {
+            // Do stuff after successful login.
+            let currentUser = Parse.User.current();
+            alert('logged in: ',currentUser.attributes.username);
+            $('#logout').empty();
+            $('#logout').append(
+              '<button id="log_out">Log Out</button>'
+            );
+            logoutListener();
+          },
+          error: function(user, error) {
+            // The login failed. Check error to see why.
+          }
+        });
+      });
+  }
+  loginListener();
+  logoutListener();
+  </script>
 </body>
 </html>
